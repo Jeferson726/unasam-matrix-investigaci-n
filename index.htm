@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Formulación de Investigaciones - UNASAM</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        unasam: {
+                            dark: '#0a192f',   /* Azul oficial institucional */
+                            blue: '#1e40af',   /* Azul secundario */
+                            light: '#0ea5e9',  /* Celeste brillante */
+                            accent: '#f59e0b', /* Dorado institucional */
+                            bg: '#f8fafc'      /* Fondo limpio */
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .editable-box:focus {
+            outline: 2px solid #0ea5e9;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
+        }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    </style>
+</head>
+<body class="bg-unasam-bg min-h-screen text-slate-800 flex flex-col">
+
+    <!-- NOTIFICACIÓN TOAST FLOTANTE -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 bg-unasam-dark text-white px-5 py-3.5 rounded-xl shadow-2xl flex items-center gap-3 text-sm border border-slate-700">
+        <i id="toast-icon" class="ph ph-check-circle text-unasam-light text-2xl"></i>
+        <span id="toast-msg" class="font-medium">¡Operación exitosa!</span>
+    </div>
+
+    <!-- HEADER INSTITUCIONAL -->
+    <header class="bg-gradient-to-r from-unasam-dark via-blue-950 to-unasam-dark text-white shadow-xl border-b-4 border-unasam-light">
+        <div class="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4 text-center md:text-left">
+                <div class="bg-white text-unasam-dark p-3 rounded-2xl shadow-lg font-black text-2xl tracking-wider border-2 border-unasam-light">
+                    UNASAM
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 justify-center md:justify-start flex-wrap">
+                        <span class="bg-unasam-light/20 text-unasam-light text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Facultad de Administración y Turismo</span>
+                        <span class="bg-unasam-accent/20 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">E.P. Administración</span>
+                    </div>
+                    <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white mt-1">
+                        SISTEMA DE FORMULACIÓN DE INVESTIGACIONES ACADÉMICAS
+                    </h1>
+                </div>
+            </div>
+            <button type="button" onclick="cargarEjemplo()" class="bg-unasam-light hover:bg-sky-400 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-all flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95 cursor-pointer">
+                <i class="ph ph-lightning text-lg"></i>
+                Cargar Ejemplo UNASAM (2026)
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- PANEL DE ENTRADA (FORMULARIO) -->
+        <section class="lg:col-span-5 bg-white p-6 sm:p-7 rounded-2xl shadow-xl border border-slate-200 flex flex-col gap-6">
+            <div class="border-b border-slate-100 pb-3">
+                <h2 class="text-base font-bold text-unasam-dark flex items-center gap-2">
+                    <i class="ph ph-sliders-horizontal text-unasam-light text-xl"></i>
+                    Parámetros Metodológicos del Estudio
+                </h2>
+                <p class="text-xs text-slate-500 mt-0.5">Seleccione el autor de referencia y configure las variables.</p>
+            </div>
+
+            <div class="space-y-5">
+                <!-- SELECTOR DE AUTOR METODOLÓGICO -->
+                <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-200">
+                    <label class="block text-xs font-bold text-amber-900 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                        <i class="ph ph-book-open text-amber-600 text-base"></i> Modelo Metodológico (Autor Base)
+                    </label>
+                    <select id="autor_metodologia" class="w-full p-2.5 text-xs bg-white border border-amber-300 rounded-lg font-semibold text-slate-900 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        <option value="Vara">Arístides Vara Horna (Enfoque normativo peruano / CONCYTEC)</option>
+                        <option value="Sampieri">Roberto Hernández Sampieri (Enfoque cuantitativo clásico)</option>
+                        <option value="Naupas">Carlos Ñaupas Paitán (Enfoque de tesis universitaria peruana)</option>
+                    </select>
+                </div>
+
+                <!-- APARTADO A: VARIABLE 1 -->
+                <div class="bg-slate-50/80 p-4 rounded-xl border border-slate-200">
+                    <h3 class="text-xs font-bold text-unasam-dark uppercase tracking-wider mb-2 flex items-center gap-2">
+                        <span class="w-5 h-5 rounded-full bg-unasam-dark text-white text-xs flex items-center justify-center font-bold">A</span>
+                        Variable 1 (VI / Variable Independiente)
+                    </h3>
+                    <input type="text" id="v1_nombre" placeholder="Ej: Gestión administrativa"
+                        class="w-full p-2.5 text-sm bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-unasam-light focus:outline-none mb-3 font-semibold text-slate-900">
+                    
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Dimensiones de la Variable 1:</label>
+                    <div id="v1_dims_container" class="space-y-2 mb-3"></div>
+                    <button type="button" onclick="agregarDimension('v1')" class="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1.5 transition cursor-pointer">
+                        <i class="ph ph-plus-circle text-base"></i> Agregar Dimensión V1
+                    </button>
+                </div>
+
+                <!-- APARTADO B: VARIABLE 2 -->
+                <div class="bg-slate-50/80 p-4 rounded-xl border border-slate-200">
+                    <h3 class="text-xs font-bold text-unasam-dark uppercase tracking-wider mb-2 flex items-center gap-2">
+                        <span class="w-5 h-5 rounded-full bg-unasam-dark text-white text-xs flex items-center justify-center font-bold">B</span>
+                        Variable 2 (VD / Variable Dependiente)
+                    </h3>
+                    <input type="text" id="v2_nombre" placeholder="Ej: Desempeño laboral"
+                        class="w-full p-2.5 text-sm bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-unasam-light focus:outline-none mb-3 font-semibold text-slate-900">
+                    
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Dimensiones de la Variable 2:</label>
+                    <div id="v2_dims_container" class="space-y-2 mb-3"></div>
+                    <button type="button" onclick="agregarDimension('v2')" class="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1.5 transition cursor-pointer">
+                        <i class="ph ph-plus-circle text-base"></i> Agregar Dimensión V2
+                    </button>
+                </div>
+
+                <!-- APARTADO C: CONTEXTO -->
+                <div class="bg-slate-50/80 p-4 rounded-xl border border-slate-200 space-y-3">
+                    <h3 class="text-xs font-bold text-unasam-dark uppercase tracking-wider flex items-center gap-2">
+                        <span class="w-5 h-5 rounded-full bg-unasam-dark text-white text-xs flex items-center justify-center font-bold">C</span>
+                        Contexto y Delimitación Espacio-Temporal
+                    </h3>
+                    <div>
+                        <label class="block text-xs text-slate-600 mb-0.5 font-medium">Población de estudio:</label>
+                        <input type="text" id="ctx_poblacion" placeholder="Ej: trabajadores administrativos" class="w-full p-2 text-sm bg-white border border-slate-300 rounded-lg font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-600 mb-0.5 font-medium">Institución o empresa:</label>
+                        <input type="text" id="ctx_institucion" placeholder="Ej: Municipalidad Provincial de Huaraz" class="w-full p-2 text-sm bg-white border border-slate-300 rounded-lg font-medium">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs text-slate-600 mb-0.5 font-medium">Ciudad / Lugar:</label>
+                            <input type="text" id="ctx_lugar" placeholder="Ej: Huaraz" class="w-full p-2 text-sm bg-white border border-slate-300 rounded-lg font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-600 mb-0.5 font-medium">Año de ejecución:</label>
+                            <input type="text" id="ctx_anio" placeholder="Ej: 2026" class="w-full p-2 text-sm bg-white border border-slate-300 rounded-lg font-medium">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- APARTADO D: ALCANCE -->
+                <div class="bg-slate-50/80 p-4 rounded-xl border border-slate-200">
+                    <h3 class="text-xs font-bold text-unasam-dark uppercase tracking-wider mb-2 flex items-center gap-2">
+                        <span class="w-5 h-5 rounded-full bg-unasam-dark text-white text-xs flex items-center justify-center font-bold">D</span>
+                        Alcance y Tipo de Investigación
+                    </h3>
+                    <select id="alcance" class="w-full p-2.5 text-xs bg-white border border-slate-300 rounded-lg font-semibold text-slate-900 focus:ring-2 focus:ring-unasam-light">
+                        <option value="correlacional">Correlacional (Asociación bilateral entre variables)</option>
+                        <option value="explicativo">Explicativo / Causal (Incidencia de V1 sobre V2)</option>
+                        <option value="descriptivo">Descriptivo (Caracterización univariable/bivariable)</option>
+                    </select>
+                </div>
+
+                <!-- BOTONES DE ACCIÓN -->
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="generarProyecto()" class="flex-1 bg-unasam-dark hover:bg-blue-950 text-white font-extrabold py-3.5 px-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-95 cursor-pointer">
+                        <i class="ph ph-cpu text-xl text-unasam-light animate-pulse"></i>
+                        GENERAR PROYECTO
+                    </button>
+                    <button type="button" onclick="limpiarFormulario()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 rounded-xl font-semibold transition flex items-center justify-center cursor-pointer" title="Limpiar Formulario">
+                        <i class="ph ph-trash text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANEL DE RESULTADOS -->
+        <section class="lg:col-span-7 bg-white p-6 sm:p-8 rounded-2xl shadow-xl border border-slate-200 flex flex-col justify-between">
+            <div>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-4 mb-6 gap-3">
+                    <div>
+                        <h2 class="text-base font-bold text-unasam-dark flex items-center gap-2">
+                            <i class="ph ph-file-text text-unasam-light text-xl"></i>
+                            Matriz Metodológica e Investigativa
+                        </h2>
+                        <p class="text-xs text-slate-500">Orden riguroso: Preguntas primero, luego Objetivos y Diseño.</p>
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+                        <button type="button" onclick="copiarContenido()" class="px-3.5 py-2 border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-1.5 transition cursor-pointer">
+                            <i class="ph ph-copy text-base text-blue-600"></i> Copiar
+                        </button>
+                        <button type="button" onclick="descargarWord()" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md transition cursor-pointer">
+                            <i class="ph ph-file-doc text-base"></i> Exportar Word (.doc)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CONTENEDOR DE RESULTADOS ACADÉMICOS -->
+                <div id="resultadosContainer" class="space-y-6 text-sm text-slate-800">
+                    <div class="text-center py-28 text-slate-400 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-200">
+                        <i class="ph ph-folder-open text-7xl mb-3 stroke-1 text-slate-300"></i>
+                        <p class="text-base font-semibold text-slate-600">El sistema aguarda los parámetros de entrada.</p>
+                        <p class="text-xs text-slate-400 mt-1">Complete los campos o presione <strong class="text-unasam-dark">"Cargar Ejemplo UNASAM"</strong>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PIE DE NOTA INSTITUCIONAL -->
+            <div class="mt-12 border-t border-slate-100 pt-4 text-xs text-slate-400 text-center font-medium">
+                Universidad Nacional Santiago Antúnez de Mayolo — Facultad de Administración y Turismo
+            </div>
+        </section>
+    </main>
+
+    <!-- LOGICA JAVASCRIPT -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            agregarDimension('v1', 'Planificación');
+            agregarDimension('v1', 'Organización');
+            agregarDimension('v1', 'Dirección');
+            agregarDimension('v1', 'Control');
+
+            agregarDimension('v2', 'Eficiencia');
+            agregarDimension('v2', 'Eficacia');
+            agregarDimension('v2', 'Productividad');
+        });
+
+        function mostrarToast(mensaje, tipo = 'success') {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toast-msg');
+            const icon = document.getElementById('toast-icon');
+            
+            msg.innerText = mensaje;
+            if(tipo === 'error') {
+                icon.className = "ph ph-warning-circle text-red-400 text-2xl";
+            } else {
+                icon.className = "ph ph-check-circle text-unasam-light text-2xl";
+            }
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3500);
+        }
+
+        function agregarDimension(variable, valor = '') {
+            const container = document.getElementById(`${variable}_dims_container`);
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-2';
+            div.innerHTML = `
+                <input type="text" class="${variable}_dim_input w-full p-2 text-xs bg-white border border-slate-300 rounded-lg focus:ring-1 focus:ring-unasam-light focus:outline-none font-medium" placeholder="Nombre de dimensión" value="${valor}">
+                <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700 p-1.5 transition cursor-pointer" title="Eliminar dimensión">
+                    <i class="ph ph-minus-circle text-lg"></i>
+                </button>
+            `;
+            container.appendChild(div);
+        }
+
+        function cargarEjemplo() {
+            document.getElementById('autor_metodologia').value = 'Vara';
+            document.getElementById('v1_nombre').value = 'Gestión administrativa';
+            document.getElementById('v2_nombre').value = 'Desempeño laboral';
+            document.getElementById('ctx_poblacion').value = 'trabajadores administrativos';
+            document.getElementById('ctx_institucion').value = 'Municipalidad Provincial de Huaraz';
+            document.getElementById('ctx_lugar').value = 'Huaraz';
+            document.getElementById('ctx_anio').value = '2026';
+            document.getElementById('alcance').value = 'correlacional';
+
+            document.getElementById('v1_dims_container').innerHTML = '';
+            document.getElementById('v2_dims_container').innerHTML = '';
+
+            ['Planificación', 'Organización', 'Dirección', 'Control'].forEach(d => agregarDimension('v1', d));
+            ['Eficiencia', 'Eficacia', 'Productividad'].forEach(d => agregarDimension('v2', d));
+
+            generarProyecto();
+            mostrarToast("¡Caso modelo UNASAM cargado con éxito!");
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('autor_metodologia').selectedIndex = 0;
+            document.getElementById('v1_nombre').value = '';
+            document.getElementById('v2_nombre').value = '';
+            document.getElementById('ctx_poblacion').value = '';
+            document.getElementById('ctx_institucion').value = '';
+            document.getElementById('ctx_lugar').value = '';
+            document.getElementById('ctx_anio').value = '';
+            
+            document.getElementById('v1_dims_container').innerHTML = '';
+            document.getElementById('v2_dims_container').innerHTML = '';
+            agregarDimension('v1');
+            agregarDimension('v2');
+            
+            document.getElementById('resultadosContainer').innerHTML = `
+                <div class="text-center py-28 text-slate-400 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-200">
+                    <i class="ph ph-folder-open text-7xl mb-3 stroke-1 text-slate-300"></i>
+                    <p class="text-base font-semibold text-slate-600">El sistema aguarda los parámetros de entrada.</p>
+                </div>`;
+            mostrarToast("Formulario restablecido", "error");
+        }
+
+        function obtenerDimensiones(variable) {
+            const inputs = document.querySelectorAll(`.${variable}_dim_input`);
+            return Array.from(inputs).map(input => input.value.trim()).filter(val => val !== '');
+        }
+
+        function capitalizar(texto) {
+            if (!texto) return '';
+            return texto.charAt(0).toUpperCase() + texto.slice(1);
+        }
+
+        function minuscula(texto) {
+            if (!texto) return '';
+            return texto.toLowerCase();
+        }
+
+        function generarProyecto() {
+            const autorKey = document.getElementById('autor_metodologia').value;
+            const v1 = document.getElementById('v1_nombre').value.trim() || 'Variable 1';
+            const v2 = document.getElementById('v2_nombre').value.trim() || 'Variable 2';
+            const dimsV1 = obtenerDimensiones('v1');
+            const dimsV2 = obtenerDimensiones('v2');
+
+            if(dimsV1.length === 0) dimsV1.push('Dimensión 1');
+            if(dimsV2.length === 0) dimsV2.push('Dimensión 1');
+
+            const poblacion = minuscula(document.getElementById('ctx_poblacion').value.trim() || 'población de estudio');
+            const institucion = document.getElementById('ctx_institucion').value.trim() || 'la entidad';
+            const lugar = document.getElementById('ctx_lugar').value.trim() || 'Huaraz';
+            const anio = document.getElementById('ctx_anio').value.trim() || '2026';
+            const alcance = document.getElementById('alcance').value;
+
+            const autoresInfo = {
+                'Vara': {
+                    nombre: 'Arístides Vara Horna (Metodología de la Investigación - Enfoque Peruano)',
+                    referencia: 'Vara Horna, A. (2015). Metodología de la investigación científica.'
+                },
+                'Sampieri': {
+                    nombre: 'Roberto Hernández Sampieri (Metodología de la Investigación - Enfoque Clásico)',
+                    referencia: 'Hernández-Sampieri, R., & Mendoza, C. (2018). Metodología de la investigación.'
+                },
+                'Naupas': {
+                    nombre: 'Carlos Ñaupas Paitán (Metodología de la Investigación Universitaria)',
+                    referencia: 'Ñaupas, H., Valdivia, M., Palacios, J., & Romero, H. (2018). Metodología de la investigación cuantitativa-cualitativa.'
+                }
+            };
+
+            let conectorTitulo = "";
+            let verboObjGen = "";
+            let conectorPregGen = "";
+            let formulaHipoGen = "";
+            let diseñoInvestigacion = "";
+
+            if (autorKey === 'Vara') {
+                if (alcance === 'correlacional') {
+                    conectorTitulo = "y su asociación con";
+                    verboObjGen = "Establecer el grado de asociación entre";
+                    conectorPregGen = "¿Cuál es el grado de asociación entre";
+                    formulaHipoGen = `Existe asociación significativa entre ${minuscula(v1)} y ${minuscula(v2)} en los ${poblacion} de la ${institucion}, ${lugar}, ${anio}.`;
+                    diseñoInvestigacion = "No experimental, transversal, correlacional bivariado.";
+                } else if (alcance === 'explicativo') {
+                    conectorTitulo = "y su impacto en";
+                    verboObjGen = "Determinar el impacto de";
+                    conectorPregGen = "¿De qué manera impacta";
+                    formulaHipoGen = `${capitalizar(v1)} impacta de manera significativa en ${minuscula(v2)} de los ${poblacion} de la ${institucion}, ${lugar}, ${anio}.`;
+                    diseñoInvestigacion = "No experimental / Causal explicativo, transversal.";
+                } else {
+                    conectorTitulo = "en";
+                    verboObjGen = "Estimar el nivel de";
+                    conectorPregGen = "¿Cuál es el nivel de";
+                    formulaHipoGen = `El nivel de ${minuscula(v1)} y ${minuscula(v2)} en los ${poblacion} es predominantemente moderado en la ${institucion}, ${lugar}, ${anio}.`;
+                    diseñoInvestigacion = "No experimental, descriptivo simple / transeccional.";
+                }
+            } else if (autorKey === 'Sampieri') {
+                if (alcance === 'correlacional') {
+                    conectorTitulo = "y su relación con";
+                    verboObjGen = "Determinar la relación entre";
+                    conectorPregGen = "¿De qué manera se relacionan";
+                    formulaHipoGen = `Existe una relación estadísticamente significativa entre ${minuscula(v1)} y ${minuscula(v2)} en los ${poblacion} de la ${institucion}, ${lugar}, ${anio}.`;
+                    diseñoInvestigacion = "No experimental, diseño transeccional correlacional (Hernández-Sampieri et al.).";
+                } else if (alcance === 'explicativo') {
+                    conectorTitulo = "y su efecto en";
+                    verboObjGen = "Analizar el efecto de";
+                    conectorPregGen = "¿Qué efecto produce";
+                    formulaHipoGen = `El nivel de ${minuscula(v1)} genera un efecto directo y significativo sobre ${minuscula(v2)} en los ${poblacion} de la ${institucion}, ${lugar}, ${anio}.`;
+                    diseñoInvestigacion = "No experimental / Causal explicativo bivariado o multivariado.";
+                } else {
+                    conectorTitulo = "en";
+                    verboObjGen = "Describir las variables";
+                    conectorPregGen = "¿Cuáles son las características de";
+                    formulaHipoGen = `Las variables ${minuscula(v1)} y ${minuscula(v2)} presentan niveles estables en los ${poblacion} de la ${institucion}, ${lugar}, ${anio}.`;
+                    diseñoInvestigacion = "No experimental, diseño transeccional descriptivo.";
+                }
+            } else { // Ñaupas
+                if (alcance === 'correlacional') {
+                    conectorTitulo = "y su influencia en";
+                    verboObjGen = "Establecer la relación causal y asociativa entre";
+                    conectorPregGen = "¿En qué medida se relaciona";
+                    formulaHipoGen = `La aplicación o estado de ${minuscula(v1)} se relaciona positivamente con ${minuscula(v2)} en los ${poblacion} de la ${institucion}, ${lugar}, ${anio}.`;
+                    diseñoInvestigacion = "Científico básico / Aplicado, diseño no experimental correlacional (Ñaupas et al.).";
+                } else if (alcance === 'explicativo') {
+                    conectorTitulo = "y su repercusión en";
+                    verboObjGen = "Explicar la repercusión de";
+                    conectorPregGen = "¿Cómo repercute";
+                    formulaHipoGen = `La dimensión de ${minuscula(v1)} repercute directamente en el comportamiento de ${minuscula(v2)} en la ${institucion}, ${lugar}, ${anio}.`;
+                    diseñoInvestigacion = "Científico explicativo / Causal.";
+                } else {
+                    conectorTitulo = "y su diagnóstico en";
+                    verboObjGen = "Diagnosticar el estado de";
+                    conectorPregGen = "¿Cuál es el diagnóstico de";
+                    formulaHipoGen = `El diagnóstico de ${minuscula(v1)} y ${minuscula(v2)} refleja deficiencias operativas en los ${poblacion} de la ${institucion}, ${lugar}, ${anio}.`;
+                    diseñoInvestigacion = "Científico descriptivo de corte transversal.";
+                }
+            }
+
+            const titulo = `${v1} ${conectorTitulo} ${minuscula(v2)} en los ${poblacion} de la ${institucion}, ${lugar}, ${anio}`;
+            
+            // OBJETIVOS
+            const objGeneral = `${verboObjGen} ${minuscula(v1)} y ${minuscula(v2)} en los ${poblacion} de la ${institucion}, ${lugar}, ${anio}.`;
+            const objsEspecificos = dimsV1.map(dim => {
+                if (alcance === 'correlacional') return `Establecer la relación entre la dimensión ${minuscula(dim)} y ${minuscula(v2)} en los ${poblacion} de la ${institucion}, ${lugar}, ${anio}.`;
+                if (alcance === 'explicativo') return `Determinar el impacto de la dimensión ${minuscula(dim)} en ${minuscula(v2)} de los ${poblacion} de la ${institucion}, ${lugar}, ${anio}.`;
+                return `Estimar el estado de la dimensión ${minuscula(dim)} en los ${poblacion} de la ${institucion}, ${lugar}, ${anio}.`;
+            });
+
+            // PREGUNTAS
+            const pregGeneral = `${conectorPregGen} ${minuscula(v1)} y ${minuscula(v2)} en los ${poblacion} de la ${institucion}, ${lugar}, ${anio}?`;
+            const pregsEspecificas = dimsV1.map(dim => {
+                if (alcance === 'correlacional') return `¿De qué manera se relaciona la dimensión ${minuscula(dim)} con ${minuscula(v2)} en los ${poblacion} de la ${institucion}, ${lugar}, ${anio}?`;
+                if (alcance === 'explicativo') return `¿De qué manera impacta la dimensión ${minuscula(dim)} en ${minuscula(v2)} de los ${poblacion} de la ${institucion}, ${lugar}, ${anio}?`;
+                return `¿Cuál es el estado de la dimensión ${minuscula(dim)} en los ${poblacion} de la ${institucion}, ${lugar}, ${anio}?`;
+            });
+
+            // HIPÓTESIS
+            const hipoGeneral = formulaHipoGen;
+            const hiposEspecificas = dimsV1.map(dim => {
+                if (alcance === 'correlacional') return `Existe relación significativa entre la dimensión ${minuscula(dim)} y ${minuscula(v2)} en los ${poblacion} de la ${institucion}, ${lugar}, ${anio}.`;
+                if (alcance === 'explicativo') return `La dimensión ${minuscula(dim)} genera un impacto significativo sobre ${minuscula(v2)} en los ${poblacion} de la ${institucion}, ${lugar}, ${anio}.`;
+                return `La dimensión ${minuscula(dim)} presenta un nivel favorable en los ${poblacion} de la ${institucion}, ${lugar}, ${anio}.`;
+            });
+
+            const container = document.getElementById('resultadosContainer');
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <div class="p-3 bg-amber-50/70 border border-amber-200 rounded-xl space-y-1 text-xs">
+                        <div>
+                            <span class="font-bold text-amber-900 uppercase">Marco Metodológico Base:</span>
+                            <span class="font-semibold text-slate-800">${autoresInfo[autorKey].nombre}</span>
+                        </div>
+                        <div>
+                            <span class="font-bold text-blue-900 uppercase">Diseño de Investigación:</span>
+                            <span class="font-medium text-slate-700 italic">${diseñoInvestigacion}</span>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <h3 class="font-bold text-unasam-dark uppercase text-xs tracking-wider mb-1 flex items-center justify-between">
+                            <span>I. Título de Investigación</span>
+                            <span class="text-[10px] text-slate-400 font-normal lowercase italic">editable</span>
+                        </h3>
+                        <div contenteditable="true" class="editable-box p-3 bg-white border border-slate-300 rounded-lg font-bold text-slate-900 text-base shadow-sm">${titulo.toUpperCase()}</div>
+                    </div>
+
+                    <!-- PREGUNTAS PRIMERO -->
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <h3 class="font-bold text-unasam-dark uppercase text-xs tracking-wider mb-1">II. Pregunta General</h3>
+                        <div contenteditable="true" class="editable-box p-3 bg-white border border-slate-300 rounded-lg shadow-sm font-medium">${pregGeneral}</div>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <h3 class="font-bold text-unasam-dark uppercase text-xs tracking-wider mb-1">III. Preguntas Específicas</h3>
+                        <div contenteditable="true" class="editable-box p-3 bg-white border border-slate-300 rounded-lg shadow-sm font-medium">
+                            <ol class="list-decimal list-inside space-y-1.5">
+                                ${pregsEspecificas.map(p => `<li>${p}</li>`).join('')}
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- OBJETIVOS DESPUÉS -->
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <h3 class="font-bold text-unasam-dark uppercase text-xs tracking-wider mb-1">IV. Objetivo General</h3>
+                        <div contenteditable="true" class="editable-box p-3 bg-white border border-slate-300 rounded-lg shadow-sm font-medium">${objGeneral}</div>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <h3 class="font-bold text-unasam-dark uppercase text-xs tracking-wider mb-1">V. Objetivos Específicos</h3>
+                        <div contenteditable="true" class="editable-box p-3 bg-white border border-slate-300 rounded-lg shadow-sm font-medium">
+                            <ol class="list-decimal list-inside space-y-1.5">
+                                ${objsEspecificos.map(o => `<li>${o}</li>`).join('')}
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <h3 class="font-bold text-unasam-dark uppercase text-xs tracking-wider mb-1">VI. Hipótesis General</h3>
+                        <div contenteditable="true" class="editable-box p-3 bg-white border border-slate-300 rounded-lg shadow-sm font-medium">${hipoGeneral}</div>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <h3 class="font-bold text-unasam-dark uppercase text-xs tracking-wider mb-1">VII. Hipótesis Específicas</h3>
+                        <div contenteditable="true" class="editable-box p-3 bg-white border border-slate-300 rounded-lg shadow-sm font-medium">
+                            <ol class="list-decimal list-inside space-y-1.5">
+                                ${hiposEspecificas.map(h => `<li>${h}</li>`).join('')}
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- MATRIZ DE CONSISTENCIA RESUMIDA -->
+                    <div class="p-4 bg-sky-50/70 border border-sky-200 rounded-xl">
+                        <h3 class="font-bold text-unasam-dark uppercase text-xs tracking-wider mb-2 flex items-center gap-1.5">
+                            <i class="ph ph-table text-blue-600 text-base"></i> VIII. Matriz de Consistencia y Diseño
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left border-collapse bg-white border border-sky-200">
+                                <thead class="bg-unasam-dark text-white uppercase text-[10px]">
+                                    <tr>
+                                        <th class="p-2 border border-slate-700">Componente</th>
+                                        <th class="p-2 border border-slate-700">Enunciado / Formulación</th>
+                                        <th class="p-2 border border-slate-700">Variables / Diseño</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="p-2 border font-bold text-slate-700">Problema</td>
+                                        <td class="p-2 border">${pregGeneral}</td>
+                                        <td class="p-2 border" rowspan="3"><strong>V1:</strong> ${v1} <br><strong>V2:</strong> ${v2}<br><br><span class="text-[10px] text-blue-800 font-semibold">Diseño:</span><br><i class="text-[10px]">${diseñoInvestigacion}</i></td>
+                                    </tr>
+                                    <tr class="bg-slate-50">
+                                        <td class="p-2 border font-bold text-slate-700">Objetivo</td>
+                                        <td class="p-2 border">${objGeneral}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 border font-bold text-slate-700">Hipótesis</td>
+                                        <td class="p-2 border">${hipoGeneral}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-slate-100 rounded-xl text-[11px] text-slate-600">
+                        <span class="font-bold text-slate-800">Referencia bibliográfica base:</span> ${autoresInfo[autorKey].referencia}
+                    </div>
+                </div>
+            `;
+            mostrarToast("¡Proyecto generado correctamente!");
+        }
+
+        function copiarContenido() {
+            const container = document.getElementById('resultadosContainer');
+            const text = container.innerText;
+            if (!text || text.includes("El sistema aguarda")) {
+                alert("Primero genere un proyecto para poder copiar.");
+                return;
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                mostrarToast("¡Contenido copiado al portapapeles!");
+            }).catch(err => {
+                alert("Error al copiar texto.");
+            });
+        }
+
+        function descargarWord() {
+            const container = document.getElementById('resultadosContainer');
+            if (!container || container.innerText.includes("El sistema aguarda")) {
+                alert("Primero genere un proyecto para poder exportar.");
+                return;
+            }
+
+            const contenidoHTML = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset='utf-8'>
+                    <title>Matriz Metodológica UNASAM</title>
+                    <style>
+                        body { font-family: 'Calibri', Arial, sans-serif; line-height: 1.6; color: #111; margin: 30px; }
+                        h1 { font-size: 16pt; color: #0a192f; text-align: center; font-weight: bold; margin-bottom: 5px; }
+                        h2 { font-size: 13pt; color: #0a192f; border-bottom: 1px solid #0a192f; margin-top: 20px; text-transform: uppercase; padding-bottom: 4px; }
+                        p, li { font-size: 11pt; text-align: justify; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                        th, td { border: 1px solid #777; padding: 8px; font-size: 10pt; text-align: left; }
+                        th { background-color: #0a192f; color: #ffffff; }
+                    </style>
+                </head>
+                <body>
+                    <h1>UNIVERSIDAD NACIONAL SANTIAGO ANTÚNEZ DE MAYOLO</h1>
+                    <p style="text-align:center; font-weight:bold; font-size:12pt; color:#444;">FACULTAD DE ADMINISTRACIÓN Y TURISMO</p>
+                    <p style="text-align:center; font-weight:bold; font-size:11pt; color:#666;">ESCUELA PROFESIONAL DE ADMINISTRACIÓN</p>
+                    <hr style="border: 1px solid #0a192f; margin-bottom: 25px;"/>
+                    ${container.innerHTML}
+                </body>
+                </html>
+            `;
+
+            const uri = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(contenidoHTML);
+            const nombreArchivo = `Matriz_Investigacion_UNASAM_${new Date().toISOString().slice(0,10)}.doc`;
+            
+            const a = document.createElement('a');
+            a.href = uri;
+            a.download = nombreArchivo;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            mostrarToast("¡Documento Word descargado con éxito!");
+        }
+    </script>
+</body>
+</html>
